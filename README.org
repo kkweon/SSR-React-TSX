@@ -1,0 +1,99 @@
+#+TITLE: Server Side Rendering React + TypeScript + Webpack
+
+This is my reference code for creating an isomorphic react application with TypeScript and Webpack.
+
+
+** Get Started
+
+#+BEGIN_SRC bash
+  yarn
+  yarn build
+  node server.js
+#+END_SRC
+
+** Description
+*** File Structure
+
+#+BEGIN_SRC bash :exports output :results output
+tree src
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+src
+├── client
+│   └── index.tsx
+├── server
+│   └── index.tsx
+└── shared
+    ├── App.css
+    ├── App.tsx
+    └── components
+        └── Header.tsx
+
+4 directories, 5 files
+#+end_example
+
+- Most React components will be developed in ~shared~ directory.
+
+*** server/index.tsx
+
+The one key idea is to use ~ReactDOM.renderToString~
+
+#+BEGIN_SRC typescript
+  import * as React from "react";
+  import * as ReactDOM from "react-dom/server";
+  import App from "../shared/App";
+
+  `
+  <body>
+      <div id="app">${ReactDOM.renderToString(<App />)}</div>
+  </body>
+  `
+#+END_SRC
+*** Webpack Configuration
+
+#+begin_src typescript
+  import * as webpack from "webpack";
+
+  // webpack configuration for CLIENT
+  // nothing special
+  const clientConfig: webpack.Configuration = {
+    entry: "./src/client/index.tsx",
+    output: {
+      path: __dirname,
+      filename: "./public/bundle.js",
+    }
+  };
+
+
+  // webpack configuration for SERVER
+  const serverConfig: webpack.Configuration = {
+    entry: "./src/server/index.tsx",
+
+    // important
+    target: "node",
+    output: {
+      path: __dirname,
+      filename: "server.js",
+      // important
+      libraryTarget: "commonjs2",
+    },
+    module: {
+      rules: [
+        {
+          test: /\.css$/,
+          use: [
+            {
+              // important // do not copy css
+              loader: "css-loader/locals",
+            },
+          ],
+        }
+      ],
+    },
+  };
+
+  // export array
+  export default [clientConfig, serverConfig];
+#+end_src
