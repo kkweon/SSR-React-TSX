@@ -97,3 +97,7 @@ The one key idea is to use ~ReactDOM.renderToString~
   // export array
   export default [clientConfig, serverConfig];
 #+end_src
+
+
+  #+ATTR_HTML: title="Greenkeeper badge"
+  [[https://greenkeeper.io/][file:https://badges.greenkeeper.io/kkweon/SSR-React-TSX.svg]]
